@@ -9,29 +9,58 @@
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #fce4ec; text-align: center; margin: 0; padding: 20px; }
         .container { background: white; max-width: 450px; margin: auto; padding: 25px; border-radius: 20px; border: 3px solid #f06292; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        h2 { color: #d81b60; margin: 0 0 10px 0; }
+        
+        /* LOGO STYLE - Circle & Transparent ready */
+        .website-logo { 
+            max-width: 180px; 
+            margin: -10px auto 10px auto; 
+            display: block; 
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); /* Nagdagdag ng konting shadow para lumitaw ang logo */
+        }
+        
+        h2 { color: #d81b60; margin: 0 0 15px 0; font-size: 22px; text-transform: uppercase; letter-spacing: 1px; }
         .section { text-align: left; background: #fff5f8; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #ffc1e3; }
         label { font-weight: bold; display: block; margin-top: 10px; color: #880e4f; font-size: 14px; }
-        input[type="text"], select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px; }
+        input[type="text"], input[type="tel"], select, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px; font-family: inherit; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .check-item { background: white; padding: 8px; border-radius: 6px; border: 1px solid #eee; font-size: 13px; display: flex; align-items: center; cursor: pointer; }
+        .check-item { background: white; padding: 8px; border-radius: 6px; border: 1px solid #eee; font-size: 13px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; }
+        .check-item:active { transform: scale(0.95); }
         .cart-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; text-align: left; }
         .cart-table td { border-bottom: 1px solid #eee; padding: 8px 0; }
-        .total-box { font-size: 26px; font-weight: bold; color: #e91e63; margin: 15px 0; }
-        button { width: 100%; border: none; padding: 15px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .total-box { font-size: 28px; font-weight: bold; color: #e91e63; margin: 15px 0; }
+        button { width: 100%; border: none; padding: 15px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-add { background: #ad1457; color: white; margin-bottom: 10px; }
+        .btn-add:hover { background: #880e4f; }
         .btn-send { background: #2e7d32; color: white; }
-        .disabled-box { opacity: 0.3; pointer-events: none; }
+        .btn-send:hover { background: #1b5e20; }
         .hidden { display: none; }
+        #gcashInfo { background: #e3f2fd; border: 1px solid #2196f3; padding: 12px; border-radius: 10px; margin-top: 10px; display: none; }
+        .fee-label { color: #d32f2f; font-size: 14px; text-align: right; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="container" id="orderForm">
-        <h2>INDAY LYKING 🍩</h2>
+        
+        <img src="image.png" alt="Inday Lyking Logo" class="website-logo">
+        
+        <h2>INDAY_LYKING</h2>
+        
         <div class="section">
-            <label>Customer Name:</label>
-            <input type="text" id="custName" placeholder="Your Full Name">
+            <label>Full Name:</label>
+            <input type="text" id="custName" placeholder="Lyka Mae Bacalso">
+            
+            <label>Contact Number:</label>
+            <input type="tel" id="custPhone" placeholder="0935 205 2856">
+
+            <label>Order Option:</label>
+            <select id="orderOption" onchange="renderCart()">
+                <option value="Pickup">Store Pick-up (Free)</option>
+                <option value="Delivery">Delivery (+₱30 Fee)</option>
+            </select>
+            
+            <label id="addrLabel">Address (Put 'N/A' if Pickup):</label>
+            <textarea id="custAddress" rows="2" placeholder="House No., Street, Brgy, Town"></textarea>
         </div>
 
         <div class="section">
@@ -54,39 +83,52 @@
                 <label class="check-item"><input type="checkbox" class="flavor-cb" value="Milky"> Milky</label>
             </div>
 
-            <label>Regular Toppings:</label>
+            <label>Toppings (Regular):</label>
             <div class="grid" id="regBox">
-                <label class="check-item"><input type="checkbox" class="top-cb" value="Sprinkles">Rainbow Sprinkles</label>
-                <label class="check-item"><input type="checkbox" class="top-cb" value="Mallows"> Mini Mallows</label>
-                <label class="check-item"><input type="checkbox" class="top-cb" value="Grahams">Milk Powder</label>
-                <label class="check-item"><input type="checkbox" class="top-cb" value="Grahams">Crushed Graham</label>
-                <label class="check-item"><input type="checkbox" class="top-cb" value="Grahams">Rice Crispies</label>
-                <label class="check-item"><input type="checkbox" class="top-cb" value="Grahams">Powder Sugar</label>
-
+                <label class="check-item"><input type="checkbox" class="top-cb" value="Sprinkles">Sprinkles</label>
+                <label class="check-item"><input type="checkbox" class="top-cb" value="Mallows">Mallows</label>
+                <label class="check-item"><input type="checkbox" class="top-cb" value="Milk">Milk Powder</label>
+                <label class="check-item"><input type="checkbox" class="top-cb" value="Graham">Graham</label>
+                <label class="check-item"><input type="checkbox" class="top-cb" value="Crispies">Crispies</label>
             </div>
 
-            <label>Premium Toppings:</label>
+            <label>Toppings (Premium):</label>
             <div class="grid" id="premBox">
-                <label class="check-item"><input type="checkbox" class="top-cb" value="ChocoChip">ChocolateChip</label>
-                <label class="check-item"><input type="checkbox" class="top-cb" value="Almonds">Sliced Almonds</label>
-                <label class="check-item"><input type="checkbox" class="top-cb" value="Oreo">Chocolate Nips</label>
-                <label class="check-item"><input type="checkbox" class="top-cb" value="Oreo">Crushed Oreo</label>
-                <label class="check-item"><input type="checkbox" class="top-cb" value="Oreo">Crushed Cashew</label>
+                <label class="check-item"><input type="checkbox" class="top-cb" value="ChocoChip">ChocoChip</label>
+                <label class="check-item"><input type="checkbox" class="top-cb" value="Almonds">Almonds</label>
+                <label class="check-item"><input type="checkbox" class="top-cb" value="Nips">Nips</label>
+                <label class="check-item"><input type="checkbox" class="top-cb" value="Oreo">Oreo</label>
             </div>
             <button class="btn-add" onclick="addToList()">+ ADD TO LIST</button>
         </div>
 
+        <div class="section">
+            <label>Payment Method:</label>
+            <select id="payMethod" onchange="toggleGcash()">
+                <option value="Cash">Cash (Counter/COD)</option>
+                <option value="GCash">GCash</option>
+            </select>
+
+            <div id="gcashInfo">
+                <p style="margin:0; color:#0d47a1; font-weight:bold;">GCash Name: LYKA MAE L. BACALSO</p>
+                <p style="margin:0; color:#0d47a1; font-weight:bold;">GCash Number: 09352052856</p>
+                <input type="text" id="refNum" placeholder="Ref Number (Last 4 digits)">
+            </div>
+        </div>
+
         <div class="section" style="background: white;">
             <table class="cart-table"><tbody id="cartItems"></tbody></table>
+            <div id="feeDisplay" class="fee-label"></div>
             <div class="total-box" id="totalDisplay">Total: ₱0</div>
-            <button id="sendBtn" class="btn-send" onclick="sendOrder()">SEND ORDER</button>
+            <button id="sendBtn" class="btn-send" onclick="sendOrder()">SEND ORDER NOW</button>
         </div>
     </div>
 
     <div class="container hidden" id="successScreen">
+        <img src="https://i.ibb.co/1K74x17/inday-lyking-circle-logo.png" alt="Inday Lyking Logo" class="website-logo">
         <h2 style="color: #4CAF50;">Order Sent! ✔</h2>
-        <p>Pakipunta sa counter para magbayad. Thank you!</p>
-        <button onclick="location.reload()" style="background: #757575; color:white;">New Order</button>
+        <p>Salamat! Hintayin ang aming tawag o text para sa confirmation ng iyong order.</p>
+        <button onclick="location.reload()" style="background: #757575; color:white;">Order Again</button>
     </div>
 
     <script>
@@ -96,13 +138,25 @@
 
         let cart = []; let limit = 1; let type = "Regular";
 
+        function toggleGcash() {
+            document.getElementById("gcashInfo").style.display = (payMethod.value === "GCash") ? "block" : "none";
+        }
+
         function updateRules() {
             let val = pkgSelect.value.split("-");
             limit = parseInt(val[1]); type = val[2];
             limitLabel.innerText = `Limit: ${limit} Flavor & ${limit} Topping`;
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-            if(type === "Regular") { regBox.classList.remove("disabled-box"); premBox.classList.add("disabled-box"); }
-            else { premBox.classList.remove("disabled-box"); regBox.classList.add("disabled-box"); }
+            
+            const rbox = document.getElementById("regBox");
+            const pbox = document.getElementById("premBox");
+            if(type === "Regular") {
+                rbox.style.opacity="1"; rbox.style.pointerEvents="auto";
+                pbox.style.opacity="0.3"; pbox.style.pointerEvents="none";
+            } else {
+                pbox.style.opacity="1"; pbox.style.pointerEvents="auto";
+                rbox.style.opacity="0.3"; rbox.style.pointerEvents="none";
+            }
         }
 
         document.addEventListener('change', function(e) {
@@ -113,33 +167,35 @@
         function addToList() {
             let f = Array.from(document.querySelectorAll('.flavor-cb:checked')).map(cb => cb.value);
             let t = Array.from(document.querySelectorAll('.top-cb:checked')).map(cb => cb.value);
-            if(f.length === 0 || t.length === 0) return alert("Select Flavor & Topping!");
-            cart.push({ pkg: pkgSelect.options[pkgSelect.selectedIndex].text, price: parseInt(pkgSelect.value), desc: `F: ${f.join(",")} | T: ${t.join(",")}` });
+            if(f.length === 0) return alert("Select Flavor!");
+            cart.push({ pkg: pkgSelect.options[pkgSelect.selectedIndex].text, price: parseInt(pkgSelect.value), desc: `F: ${f.join(", ")} | T: ${t.join(", ")}` });
             renderCart();
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
         }
 
         function renderCart() {
-            let h = ""; let total = 0;
+            let h = ""; let subtotal = 0;
             cart.forEach((item, i) => {
-                h += `<tr><td><b>${item.pkg}</b><br>${item.desc}</td><td>₱${item.price}</td><td><button onclick="cart.splice(${i},1);renderCart()" style="background:red;color:white;border:none;">X</button></td></tr>`;
-                total += item.price;
+                h += `<tr><td><b>${item.pkg}</b><br><small>${item.desc}</small></td><td>₱${item.price}</td><td><button onclick="cart.splice(${i},1);renderCart()" style="background:red;color:white;border:none;padding:2px 6px;border-radius:4px;">X</button></td></tr>`;
+                subtotal += item.price;
             });
-            cartItems.innerHTML = h; totalDisplay.innerText = "Total: ₱" + total;
+            let deliveryFee = (orderOption.value === "Delivery" && cart.length > 0) ? 30 : 0;
+            let grandTotal = subtotal + deliveryFee;
+            cartItems.innerHTML = h;
+            document.getElementById("feeDisplay").innerText = deliveryFee > 0 ? "+ Delivery Fee: ₱30" : "";
+            document.getElementById("totalDisplay").innerText = "Total: ₱" + grandTotal;
         }
 
         function sendOrder() {
-            if(!custName.value || cart.length === 0) return alert("Enter Name & Add Items!");
+            if(!custName.value || !custPhone.value || cart.length === 0) return alert("Paki-fill up lahat ng detalye.");
+            if(orderOption.value === "Delivery" && (!custAddress.value || custAddress.value.toUpperCase() === 'N/A')) return alert("Address please!");
+            
             sendBtn.disabled = true; sendBtn.innerText = "Sending...";
+            
             db.ref("orders").push({
-                customer: custName.value,
-                package: cart.map(i => i.pkg).join("<br>"),
-                flavors: cart.map(i => i.desc).join("<br>"),
-                total: totalDisplay.innerText,
-                timestamp: Date.now()
-            }).then(() => {
-                orderForm.classList.add("hidden"); successScreen.classList.remove("hidden");
-            });
+                customer: custName.value, phone: custPhone.value, address: orderOption.value === "Pickup" ? "STORE PICKUP" : custAddress.value,
+                package: cart.map(i => i.pkg).join("<br>"), flavors: cart.map(i => i.desc).join("<br>"), total: document.getElementById("totalDisplay").innerText, payment: payMethod.value, ref: refNum.value || "N/A", timestamp: Date.now()
+            }).then(() => { orderForm.classList.add("hidden"); successScreen.classList.remove("hidden"); }).catch(err => { alert(err); sendBtn.disabled = false; });
         }
         updateRules();
     </script>
