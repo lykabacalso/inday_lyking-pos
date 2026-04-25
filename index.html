@@ -3,270 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inday Lyking POS & Order Tracker</title>
+    <title>Order Online - Inday Lyking Mini Donuts</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: #fce4ec; 
-            text-align: center; 
-            color: #444; 
-            margin: 0;
-            padding: 20px;
-        }
-        .container { 
-            background: white; 
-            width: 100%;
-            max-width: 500px; 
-            margin: 10px auto; 
-            padding: 25px; 
-            border-radius: 15px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
-            border: 2px solid #f06292; 
-            box-sizing: border-box;
-        }
-        h2 { color: #d81b60; margin-bottom: 10px; }
-        input, select, button { 
-            width: 100%; 
-            padding: 12px; 
-            margin: 8px 0; 
-            border-radius: 8px; 
-            border: 1px solid #ddd; 
-            box-sizing: border-box; 
-            font-size: 16px;
-        }
-        button { 
-            background: #e91e63; 
-            color: white; 
-            border: none; 
-            cursor: pointer; 
-            font-weight: bold; 
-            transition: 0.3s; 
-        }
-        button:hover { background: #c2185b; }
-        .secondary-btn { background: #f06292; }
+        body { font-family: 'Segoe UI', sans-serif; background: #fce4ec; text-align: center; margin: 0; padding: 20px; }
+        .container { background: white; max-width: 450px; margin: auto; padding: 25px; border-radius: 20px; border: 3px solid #f06292; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        h2 { color: #d81b60; margin: 0 0 10px 0; }
+        .section { text-align: left; background: #fff5f8; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #ffc1e3; }
+        label { font-weight: bold; display: block; margin-top: 10px; color: #880e4f; font-size: 14px; }
+        input[type="text"], select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .check-item { background: white; padding: 8px; border-radius: 6px; border: 1px solid #eee; font-size: 13px; display: flex; align-items: center; cursor: pointer; }
+        .cart-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; text-align: left; }
+        .cart-table td { border-bottom: 1px solid #eee; padding: 8px 0; }
+        .total-box { font-size: 26px; font-weight: bold; color: #e91e63; margin: 15px 0; }
+        button { width: 100%; border: none; padding: 15px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .btn-add { background: #ad1457; color: white; margin-bottom: 10px; }
+        .btn-send { background: #2e7d32; color: white; }
+        .disabled-box { opacity: 0.3; pointer-events: none; }
         .hidden { display: none; }
-        
-        /* POS Layout */
-        .receipt { 
-            text-align: left; 
-            background: #fff5f8; 
-            padding: 15px; 
-            margin-top: 15px; 
-            border-radius: 8px; 
-            border: 1px dashed #f06292; 
-        }
-        .item-entry { border-bottom: 1px solid #eee; padding: 8px 0; font-size: 14px; }
-        .total-section { font-size: 20px; font-weight: bold; color: #d81b60; margin: 10px 0; }
-
-        /* ORDER HISTORY / KITCHEN VIEW */
-        .history-container {
-            background: #fff;
-            max-width: 500px;
-            margin: 20px auto;
-            padding: 20px;
-            border-radius: 15px;
-            border: 2px solid #ad1457;
-            text-align: left;
-        }
-        .order-card {
-            background: #fdf0f4;
-            padding: 10px;
-            border-left: 5px solid #e91e63;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            font-size: 13px;
-        }
-        .order-header { font-weight: bold; color: #ad1457; border-bottom: 1px solid #ffc1e3; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
-    <div class="container" id="loginPage">
-        <h2>🍩 LOGIN</h2>
-        <input id="loginEmail" type="text" placeholder="Email / Username">
-        <input id="loginPass" type="password" placeholder="Password">
-        <button onclick="login()">Login</button>
-        <button class="secondary-btn" onclick="showSignup()">Create New Account</button>
-    </div>
+    <div class="container" id="orderForm">
+        <h2>INDAY LYKING 🍩</h2>
+        <div class="section">
+            <label>Customer Name:</label>
+            <input type="text" id="custName" placeholder="Your Full Name">
+        </div>
 
-    <div class="container hidden" id="signupPage">
-        <h2>📝 SIGN UP</h2>
-        <input id="signupEmail" type="text" placeholder="Enter Email">
-        <input id="signupPass" type="password" placeholder="Enter Password">
-        <button onclick="signup()">Register</button>
-        <button class="secondary-btn" onclick="showLogin()">Back to Login</button>
-    </div>
-
-    <div id="posPage" class="hidden">
-        <div class="container">
-            <h2 style="margin:0;">INDAY LYKING</h2>
-            <p style="margin:0 0 15px 0; font-weight:bold; color:#e91e63;">MINI DONUTS POS</p>
-
-            <input id="customer" placeholder="Customer Name">
-
-            <select id="package">
-                <option value="Solo-Regular-25">Solo Regular (3pcs) - ₱25</option>
-                <option value="Solo-Premium-30">Solo Premium (3pcs) - ₱30</option>
-                <option value="Couple-Regular-55">Couple Regular (6pcs) - ₱55</option>
-                <option value="Couple-Premium-60">Couple Premium (6pcs) - ₱60</option>
-                <option value="Barkada-Regular-100">Barkada Regular (12pcs) - ₱100</option>
-                <option value="Barkada-Premium-110">Barkada Premium (12pcs) - ₱110</option>
+        <div class="section">
+            <label id="limitLabel">Limit: 1 Flavor & 1 Topping</label>
+            <select id="pkgSelect" onchange="updateRules()">
+                <option value="25-1-Regular">Solo Regular - ₱25</option>
+                <option value="30-1-Premium">Solo Premium - ₱30</option>
+                <option value="55-2-Regular">Couple Regular - ₱55</option>
+                <option value="60-2-Premium">Couple Premium - ₱60</option>
+                <option value="100-3-Regular">Barkada Regular - ₱100</option>
+                <option value="110-3-Premium">Barkada Premium - ₱110</option>
             </select>
 
-            <select id="flavor">
-                <option value="Chocolate">Chocolate</option>
-                <option value="Strawberry">Strawberry</option>
-                <option value="Matcha">Matcha</option>
-                <option value="Ube">Ube</option>
-                <option value="Milky">Milky</option>
-            </select>
-
-            <select id="topping">
-                <optgroup label="Regular">
-                    <option value="Rainbow Sprinkles">Rainbow Sprinkles</option>
-                    <option value="Mini Mallows">Mini Mallows</option>
-                    <option value="Crushed Grahams">Crushed Grahams</option>
-                    <option value="Milk Powder">Milk Powder</option>
-                    <option value="Powdered Sugar">Powdered Sugar</option>
-                    <option value="Rice Crispies">Rice Crispies</option>
-                </optgroup>
-                <optgroup label="Premium">
-                    <option value="Chocolate Chip">Chocolate Chip</option>
-                    <option value="Sliced Almonds">Sliced Almonds</option>
-                    <option value="Chocolate Nips">Chocolate Nips</option>
-                    <option value="Crushed Cashew">Crushed Cashew</option>
-                    <option value="Crushed Oreo">Crushed Oreo</option>
-                </optgroup>
-            </select>
-
-            <input id="qty" type="number" value="1" min="1">
-            <button onclick="addItem()">Add Item</button>
-
-            <div class="receipt">
-                <div id="list"><i>Current cart is empty...</i></div>
+            <label>Flavors:</label>
+            <div class="grid">
+                <label class="check-item"><input type="checkbox" class="flavor-cb" value="Choco"> Choco</label>
+                <label class="check-item"><input type="checkbox" class="flavor-cb" value="Straw"> Straw</label>
+                <label class="check-item"><input type="checkbox" class="flavor-cb" value="Matcha"> Matcha</label>
+                <label class="check-item"><input type="checkbox" class="flavor-cb" value="Ube"> Ube</label>
+                <label class="check-item"><input type="checkbox" class="flavor-cb" value="Milky"> Milky</label>
             </div>
-            
-            <div class="total-section" id="totalDisplay">Total: ₱0</div>
 
-            <input id="payment" type="number" placeholder="Cash Amount">
-            <button onclick="checkout()">Checkout & Save Order</button>
-            <div id="changeDisplay" style="font-weight:bold; margin-top:5px;"></div>
-            
-            <button onclick="logout()" style="background:#757575; margin-top:10px;">Logout</button>
+            <label>Regular Toppings:</label>
+            <div class="grid" id="regBox">
+                <label class="check-item"><input type="checkbox" class="top-cb" value="Sprinkles"> Sprinkles</label>
+                <label class="check-item"><input type="checkbox" class="top-cb" value="Mallows"> Mallows</label>
+                <label class="check-item"><input type="checkbox" class="top-cb" value="Grahams"> Grahams</label>
+            </div>
+
+            <label>Premium Toppings:</label>
+            <div class="grid" id="premBox">
+                <label class="check-item"><input type="checkbox" class="top-cb" value="ChocoChip"> ChocoChip</label>
+                <label class="check-item"><input type="checkbox" class="top-cb" value="Almonds"> Almonds</label>
+                <label class="check-item"><input type="checkbox" class="top-cb" value="Oreo"> Oreo</label>
+            </div>
+            <button class="btn-add" onclick="addToList()">+ ADD TO LIST</button>
         </div>
 
-        <div class="history-container">
-            <h3 style="color:#ad1457; margin-top:0;">📋 KITCHEN ORDERS (Recent)</h3>
-            <div id="orderHistory"><i>No orders processed yet.</i></div>
-            <button onclick="clearHistory()" style="background:#ddd; color:#333; font-size:12px; padding:5px; margin-top:10px;">Clear Order History</button>
+        <div class="section" style="background: white;">
+            <table class="cart-table"><tbody id="cartItems"></tbody></table>
+            <div class="total-box" id="totalDisplay">Total: ₱0</div>
+            <button id="sendBtn" class="btn-send" onclick="sendOrder()">SEND ORDER</button>
         </div>
+    </div>
+
+    <div class="container hidden" id="successScreen">
+        <h2 style="color: #4CAF50;">Order Sent! ✔</h2>
+        <p>Pakipunta sa counter para magbayad. Thank you!</p>
+        <button onclick="location.reload()" style="background: #757575; color:white;">New Order</button>
     </div>
 
     <script>
-        // --- AUTH ---
-        function showSignup() { loginPage.classList.add("hidden"); signupPage.classList.remove("hidden"); }
-        function showLogin() { signupPage.classList.add("hidden"); loginPage.classList.remove("hidden"); }
+        const firebaseConfig = { databaseURL: "https://inday-lyking-pos-default-rtdb.firebaseio.com/" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        function signup() {
-            let email = signupEmail.value; let pass = signupPass.value;
-            if(!email || !pass) { alert("Fill all fields!"); return; }
-            let users = JSON.parse(localStorage.getItem("users")) || [];
-            users.push({email, pass});
-            localStorage.setItem("users", JSON.stringify(users));
-            alert("Registered! You can login now.");
-            showLogin();
+        let cart = []; let limit = 1; let type = "Regular";
+
+        function updateRules() {
+            let val = pkgSelect.value.split("-");
+            limit = parseInt(val[1]); type = val[2];
+            limitLabel.innerText = `Limit: ${limit} Flavor & ${limit} Topping`;
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            if(type === "Regular") { regBox.classList.remove("disabled-box"); premBox.classList.add("disabled-box"); }
+            else { premBox.classList.remove("disabled-box"); regBox.classList.add("disabled-box"); }
         }
 
-        function login() {
-            let email = loginEmail.value; let pass = loginPass.value;
-            let users = JSON.parse(localStorage.getItem("users")) || [];
-            let user = users.find(u => u.email === email && u.pass === pass);
-            if(user) { loginPage.classList.add("hidden"); posPage.classList.remove("hidden"); renderHistory(); }
-            else { alert("Invalid Login!"); }
-        }
+        document.addEventListener('change', function(e) {
+            if(e.target.classList.contains('flavor-cb') && document.querySelectorAll('.flavor-cb:checked').length > limit) { alert("Limit reached!"); e.target.checked = false; }
+            if(e.target.classList.contains('top-cb') && document.querySelectorAll('.top-cb:checked').length > limit) { alert("Limit reached!"); e.target.checked = false; }
+        });
 
-        function logout() { location.reload(); }
-
-        // --- POS ENGINE ---
-        let cart = [];
-        let grandTotal = 0;
-
-        function addItem() {
-            let pkgData = document.getElementById("package").value.split("-");
-            let qty = parseInt(document.getElementById("qty").value);
-            let subtotal = parseInt(pkgData[2]) * qty;
-
-            cart.push({
-                desc: `${pkgData[0]} (${pkgData[1]})`,
-                flavor: flavor.value,
-                topping: topping.value,
-                qty: qty,
-                sub: subtotal
-            });
-            grandTotal += subtotal;
+        function addToList() {
+            let f = Array.from(document.querySelectorAll('.flavor-cb:checked')).map(cb => cb.value);
+            let t = Array.from(document.querySelectorAll('.top-cb:checked')).map(cb => cb.value);
+            if(f.length === 0 || t.length === 0) return alert("Select Flavor & Topping!");
+            cart.push({ pkg: pkgSelect.options[pkgSelect.selectedIndex].text, price: parseInt(pkgSelect.value), desc: `F: ${f.join(",")} | T: ${t.join(",")}` });
             renderCart();
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
         }
 
         function renderCart() {
-            list.innerHTML = cart.length ? "" : "<i>Current cart is empty...</i>";
-            cart.forEach(item => {
-                list.innerHTML += `<div class="item-entry"><b>${item.qty}x ${item.desc}</b> - ₱${item.sub}<br><small>${item.flavor} | ${item.topping}</small></div>`;
+            let h = ""; let total = 0;
+            cart.forEach((item, i) => {
+                h += `<tr><td><b>${item.pkg}</b><br>${item.desc}</td><td>₱${item.price}</td><td><button onclick="cart.splice(${i},1);renderCart()" style="background:red;color:white;border:none;">X</button></td></tr>`;
+                total += item.price;
             });
-            totalDisplay.innerText = "Total: ₱" + grandTotal;
+            cartItems.innerHTML = h; totalDisplay.innerText = "Total: ₱" + total;
         }
 
-        function checkout() {
-            let cash = parseFloat(payment.value);
-            if(cart.length === 0) return alert("Add items first!");
-            if(isNaN(cash) || cash < grandTotal) return alert("Insufficient Cash!");
-
-            let change = cash - grandTotal;
-            changeDisplay.innerText = "Change: ₱" + change.toFixed(2);
-
-            // SAVE TO HISTORY
-            let history = JSON.parse(localStorage.getItem("order_history")) || [];
-            let newOrder = {
-                id: Date.now(),
-                customer: customer.value || "Walk-in Customer",
-                items: [...cart],
-                total: grandTotal,
-                time: new Date().toLocaleTimeString()
-            };
-            history.unshift(newOrder); // Add to top
-            localStorage.setItem("order_history", JSON.stringify(history));
-
-            alert("Order Saved to Kitchen!");
-            
-            // RESET
-            cart = []; grandTotal = 0;
-            customer.value = ""; payment.value = "";
-            renderCart();
-            renderHistory();
-        }
-
-        // --- HISTORY / KITCHEN VIEW ---
-        function renderHistory() {
-            let history = JSON.parse(localStorage.getItem("order_history")) || [];
-            let historyDiv = document.getElementById("orderHistory");
-            historyDiv.innerHTML = history.length ? "" : "<i>No orders processed yet.</i>";
-
-            history.forEach(order => {
-                let itemsHtml = order.items.map(i => `• ${i.qty}x ${i.desc} (${i.flavor} / ${i.topping})`).join("<br>");
-                historyDiv.innerHTML += `
-                    <div class="order-card">
-                        <div class="order-header">Customer: ${order.customer} | Time: ${order.time}</div>
-                        ${itemsHtml} <br>
-                        <strong>Total Paid: ₱${order.total}</strong>
-                    </div>`;
+        function sendOrder() {
+            if(!custName.value || cart.length === 0) return alert("Enter Name & Add Items!");
+            sendBtn.disabled = true; sendBtn.innerText = "Sending...";
+            db.ref("orders").push({
+                customer: custName.value,
+                package: cart.map(i => i.pkg).join("<br>"),
+                flavors: cart.map(i => i.desc).join("<br>"),
+                total: totalDisplay.innerText,
+                timestamp: Date.now()
+            }).then(() => {
+                orderForm.classList.add("hidden"); successScreen.classList.remove("hidden");
             });
         }
-
-        function clearHistory() {
-            if(confirm("Burahin lahat ng orders sa kitchen?")) {
-                localStorage.removeItem("order_history");
-                renderHistory();
-            }
-        }
+        updateRules();
     </script>
 </body>
 </html>
