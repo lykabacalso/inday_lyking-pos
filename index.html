@@ -7,64 +7,63 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #fce4ec; text-align: center; margin: 0; padding: 20px; }
-        .container { background: white; max-width: 450px; margin: auto; padding: 25px; border-radius: 20px; border: 3px solid #f06292; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        body { font-family: 'Segoe UI', sans-serif; background: #fce4ec; text-align: center; margin: 0; padding: 20px; padding-bottom: 100px; }
+        .container { background: white; max-width: 450px; margin: auto; padding: 25px; border-radius: 25px; border: 3px solid #f06292; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         
-        /* LOGO STYLE - Circle & Transparent ready */
-        .website-logo { 
-            max-width: 180px; 
-            margin: -10px auto 10px auto; 
-            display: block; 
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); /* Nagdagdag ng konting shadow para lumitaw ang logo */
-        }
+        .website-logo { max-width: 150px; margin: -10px auto 10px auto; display: block; border-radius: 50%; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
         
-        h2 { color: #d81b60; margin: 0 0 15px 0; font-size: 22px; text-transform: uppercase; letter-spacing: 1px; }
-        .section { text-align: left; background: #fff5f8; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #ffc1e3; }
-        label { font-weight: bold; display: block; margin-top: 10px; color: #880e4f; font-size: 14px; }
-        input[type="text"], input[type="tel"], select, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px; font-family: inherit; }
+        h2 { color: #d81b60; margin: 0 0 15px 0; font-size: 22px; text-transform: uppercase; }
+        .section { text-align: left; background: #fff5f8; padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #ffc1e3; }
+        label { font-weight: bold; display: block; margin-top: 10px; color: #880e4f; font-size: 13px; }
+        
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px; font-family: inherit; }
+        
+        .qty-container { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 15px 0; }
+        .qty-btn { width: 40px !important; height: 40px; border-radius: 50% !important; padding: 0 !important; font-size: 20px; background: #f06292; color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        #qtyDisplay { font-size: 20px; font-weight: bold; color: #d81b60; }
+
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .check-item { background: white; padding: 8px; border-radius: 6px; border: 1px solid #eee; font-size: 13px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; }
-        .check-item:active { transform: scale(0.95); }
-        .cart-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; text-align: left; }
-        .cart-table td { border-bottom: 1px solid #eee; padding: 8px 0; }
-        .total-box { font-size: 28px; font-weight: bold; color: #e91e63; margin: 15px 0; }
-        button { width: 100%; border: none; padding: 15px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-add { background: #ad1457; color: white; margin-bottom: 10px; }
-        .btn-add:hover { background: #880e4f; }
-        .btn-send { background: #2e7d32; color: white; }
-        .btn-send:hover { background: #1b5e20; }
-        .hidden { display: none; }
-        #gcashInfo { background: #e3f2fd; border: 1px solid #2196f3; padding: 12px; border-radius: 10px; margin-top: 10px; display: none; }
+        .check-item { background: white; padding: 10px; border-radius: 8px; border: 1px solid #eee; font-size: 13px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; }
+        .check-item input { width: auto; margin-right: 8px; }
+        
+        .total-box { font-size: 30px; font-weight: bold; color: #e91e63; margin: 15px 0; }
         .fee-label { color: #d32f2f; font-size: 14px; text-align: right; font-weight: bold; }
+
+        button { width: 100%; border: none; padding: 15px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-add { background: #ad1457; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-add:hover { background: #d81b60; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(240, 98, 146, 0.4); }
+        .btn-send { background: #2e7d32; color: white; margin-top: 10px; }
+        .btn-messenger { background: #0084ff; color: white; margin-top: 10px; }
+        
+        .cart-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; text-align: left; }
+        .cart-table td { border-bottom: 1px solid #eee; padding: 10px 0; }
+
+        .fb-chat { position: fixed; bottom: 20px; right: 20px; background: #0084ff; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 8px; z-index: 1000; font-size: 14px; }
+        .hidden { display: none; }
+        #gcashInfo { background: #e3f2fd; border: 1px solid #2196f3; padding: 15px; border-radius: 12px; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
 
     <div class="container" id="orderForm">
-        
-        <img src="image.png" alt="Inday Lyking Logo" class="website-logo">
-        
-        <h2>INDAY_LYKING</h2>
+        <img src="logo.jpg" alt="Inday Lyking Logo" class="website-logo">
+        <h2>Order Online</h2>
         
         <div class="section">
             <label>Full Name:</label>
-            <input type="text" id="custName" placeholder="Lyka Mae Bacalso">
-            
+            <input type="text" id="custName" placeholder="Name">
             <label>Contact Number:</label>
-            <input type="tel" id="custPhone" placeholder="0935 205 2856">
-
+            <input type="tel" id="custPhone" placeholder="09xxxxxxxxx">
             <label>Order Option:</label>
             <select id="orderOption" onchange="renderCart()">
                 <option value="Pickup">Store Pick-up (Free)</option>
                 <option value="Delivery">Delivery (+₱30 Fee)</option>
             </select>
-            
-            <label id="addrLabel">Address (Put 'N/A' if Pickup):</label>
-            <textarea id="custAddress" rows="2" placeholder="House No., Street, Brgy, Town"></textarea>
+            <textarea id="custAddress" rows="2" placeholder="Full Address for Delivery"></textarea>
         </div>
 
         <div class="section">
-            <label id="limitLabel">Limit: 1 Flavor & 1 Topping</label>
+            <label>Select Package:</label>
             <select id="pkgSelect" onchange="updateRules()">
                 <option value="25-1-Regular">Solo Regular - ₱25</option>
                 <option value="30-1-Premium">Solo Premium - ₱30</option>
@@ -73,7 +72,7 @@
                 <option value="100-3-Regular">Barkada Regular - ₱100</option>
                 <option value="110-3-Premium">Barkada Premium - ₱110</option>
             </select>
-
+            <label id="limitLabel">Limit: 1 Flavor & 1 Topping</label>
             <label>Flavors:</label>
             <div class="grid">
                 <label class="check-item"><input type="checkbox" class="flavor-cb" value="Choco"> Chocolate</label>
@@ -82,8 +81,7 @@
                 <label class="check-item"><input type="checkbox" class="flavor-cb" value="Ube"> Ube</label>
                 <label class="check-item"><input type="checkbox" class="flavor-cb" value="Milky"> Milky</label>
             </div>
-
-            <label>Toppings (Regular):</label>
+            <label>Toppings:</label>
             <div class="grid" id="regBox">
                 <label class="check-item"><input type="checkbox" class="top-cb" value="Sprinkles">Sprinkles</label>
                 <label class="check-item"><input type="checkbox" class="top-cb" value="Mallows">Mallows</label>
@@ -91,13 +89,17 @@
                 <label class="check-item"><input type="checkbox" class="top-cb" value="Graham">Graham</label>
                 <label class="check-item"><input type="checkbox" class="top-cb" value="Crispies">Crispies</label>
             </div>
-
-            <label>Toppings (Premium):</label>
-            <div class="grid" id="premBox">
+            <div class="grid hidden" id="premBox">
                 <label class="check-item"><input type="checkbox" class="top-cb" value="ChocoChip">ChocoChip</label>
                 <label class="check-item"><input type="checkbox" class="top-cb" value="Almonds">Almonds</label>
                 <label class="check-item"><input type="checkbox" class="top-cb" value="Nips">Nips</label>
                 <label class="check-item"><input type="checkbox" class="top-cb" value="Oreo">Oreo</label>
+            </div>
+            <label>Quantity:</label>
+            <div class="qty-container">
+                <button class="qty-btn" onclick="changeQty(-1)">-</button>
+                <span id="qtyDisplay">1</span>
+                <button class="qty-btn" onclick="changeQty(1)">+</button>
             </div>
             <button class="btn-add" onclick="addToList()">+ ADD TO LIST</button>
         </div>
@@ -108,11 +110,9 @@
                 <option value="Cash">Cash (Counter/COD)</option>
                 <option value="GCash">GCash</option>
             </select>
-
             <div id="gcashInfo">
-                <p style="margin:0; color:#0d47a1; font-weight:bold;">GCash Name: LYKA MAE L. BACALSO</p>
-                <p style="margin:0; color:#0d47a1; font-weight:bold;">GCash Number: 09352052856</p>
-                <input type="text" id="refNum" placeholder="Ref Number (Last 4 digits)">
+                <p><b>GCash Name:</b> LYKA M.<br><b>Number:</b> 09123456789</p>
+                <input type="text" id="refNum" placeholder="Last 4 digits of Ref No.">
             </div>
         </div>
 
@@ -125,38 +125,34 @@
     </div>
 
     <div class="container hidden" id="successScreen">
-        <img src="https://i.ibb.co/1K74x17/inday-lyking-circle-logo.png" alt="Inday Lyking Logo" class="website-logo">
+        <img src="logo.jpg" alt="Logo" class="website-logo">
         <h2 style="color: #4CAF50;">Order Sent! ✔</h2>
-        <p>Salamat! Hintayin ang aming tawag o text para sa confirmation ng iyong order.</p>
-        <button onclick="location.reload()" style="background: #757575; color:white;">Order Again</button>
+        <div id="orderIdBox" style="background:#fff3e0; padding:15px; border-radius:10px; margin:10px 0; border:1px dashed #fb8c00; text-align:left;">
+            <p id="summaryText" style="font-size:13px; color:#333; line-height:1.5;"></p>
+        </div>
+        <button class="btn-messenger" onclick="copyAndChat()">📋 Copy & Send to Messenger</button>
+        <button onclick="location.reload()" style="background: #757575; color:white; margin-top:10px;">Order Again</button>
     </div>
+
+    <a href="https://m.me/100024165588307" target="_blank" class="fb-chat">💬 Chat with Lyka</a>
 
     <script>
         const firebaseConfig = { databaseURL: "https://inday-lyking-pos-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let cart = []; let limit = 1; let type = "Regular";
+        let cart = []; let currentQty = 1; let limit = 1; let type = "Regular";
 
-        function toggleGcash() {
-            document.getElementById("gcashInfo").style.display = (payMethod.value === "GCash") ? "block" : "none";
-        }
+        function changeQty(n) { currentQty = Math.max(1, currentQty + n); document.getElementById("qtyDisplay").innerText = currentQty; }
+        function toggleGcash() { document.getElementById("gcashInfo").style.display = (payMethod.value === "GCash") ? "block" : "none"; }
 
         function updateRules() {
             let val = pkgSelect.value.split("-");
             limit = parseInt(val[1]); type = val[2];
             limitLabel.innerText = `Limit: ${limit} Flavor & ${limit} Topping`;
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-            
-            const rbox = document.getElementById("regBox");
-            const pbox = document.getElementById("premBox");
-            if(type === "Regular") {
-                rbox.style.opacity="1"; rbox.style.pointerEvents="auto";
-                pbox.style.opacity="0.3"; pbox.style.pointerEvents="none";
-            } else {
-                pbox.style.opacity="1"; pbox.style.pointerEvents="auto";
-                rbox.style.opacity="0.3"; rbox.style.pointerEvents="none";
-            }
+            document.getElementById("regBox").classList.toggle("hidden", type !== "Regular");
+            document.getElementById("premBox").classList.toggle("hidden", type === "Regular");
         }
 
         document.addEventListener('change', function(e) {
@@ -167,8 +163,9 @@
         function addToList() {
             let f = Array.from(document.querySelectorAll('.flavor-cb:checked')).map(cb => cb.value);
             let t = Array.from(document.querySelectorAll('.top-cb:checked')).map(cb => cb.value);
-            if(f.length === 0) return alert("Select Flavor!");
-            cart.push({ pkg: pkgSelect.options[pkgSelect.selectedIndex].text, price: parseInt(pkgSelect.value), desc: `F: ${f.join(", ")} | T: ${t.join(", ")}` });
+            if(f.length === 0) return alert("Pili ka muna ng flavor!");
+            cart.push({ pkg: pkgSelect.options[pkgSelect.selectedIndex].text, price: parseInt(pkgSelect.value) * currentQty, desc: `(${currentQty}x) F: ${f.join(", ")} | T: ${t.join(", ")}` });
+            currentQty = 1; document.getElementById("qtyDisplay").innerText = "1";
             renderCart();
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
         }
@@ -176,26 +173,38 @@
         function renderCart() {
             let h = ""; let subtotal = 0;
             cart.forEach((item, i) => {
-                h += `<tr><td><b>${item.pkg}</b><br><small>${item.desc}</small></td><td>₱${item.price}</td><td><button onclick="cart.splice(${i},1);renderCart()" style="background:red;color:white;border:none;padding:2px 6px;border-radius:4px;">X</button></td></tr>`;
+                h += `<tr><td><b>${item.desc}</b></td><td>₱${item.price}</td><td><button onclick="cart.splice(${i},1);renderCart()" style="background:red;color:white;padding:2px 8px;border-radius:5px;width:auto;">X</button></td></tr>`;
                 subtotal += item.price;
             });
-            let deliveryFee = (orderOption.value === "Delivery" && cart.length > 0) ? 30 : 0;
-            let grandTotal = subtotal + deliveryFee;
-            cartItems.innerHTML = h;
-            document.getElementById("feeDisplay").innerText = deliveryFee > 0 ? "+ Delivery Fee: ₱30" : "";
-            document.getElementById("totalDisplay").innerText = "Total: ₱" + grandTotal;
+            let dFee = (orderOption.value === "Delivery" && cart.length > 0) ? 30 : 0;
+            document.getElementById("feeDisplay").innerText = dFee > 0 ? "+ Delivery Fee: ₱30" : "";
+            document.getElementById("totalDisplay").innerText = "Total: ₱" + (subtotal + dFee);
         }
 
         function sendOrder() {
-            if(!custName.value || !custPhone.value || cart.length === 0) return alert("Paki-fill up lahat ng detalye.");
-            if(orderOption.value === "Delivery" && (!custAddress.value || custAddress.value.toUpperCase() === 'N/A')) return alert("Address please!");
-            
+            if(!custName.value || !custPhone.value || cart.length === 0) return alert("Complete details please!");
+            const oID = "IL-" + Math.floor(1000 + Math.random() * 9000);
             sendBtn.disabled = true; sendBtn.innerText = "Sending...";
-            
+            const totalStr = document.getElementById("totalDisplay").innerText;
+
             db.ref("orders").push({
-                customer: custName.value, phone: custPhone.value, address: orderOption.value === "Pickup" ? "STORE PICKUP" : custAddress.value,
-                package: cart.map(i => i.pkg).join("<br>"), flavors: cart.map(i => i.desc).join("<br>"), total: document.getElementById("totalDisplay").innerText, payment: payMethod.value, ref: refNum.value || "N/A", timestamp: Date.now()
-            }).then(() => { orderForm.classList.add("hidden"); successScreen.classList.remove("hidden"); }).catch(err => { alert(err); sendBtn.disabled = false; });
+                orderID: oID, customer: custName.value, phone: custPhone.value,
+                address: orderOption.value === "Pickup" ? "STORE PICKUP" : custAddress.value,
+                items: cart.map(i => i.desc).join(", "), total: totalStr,
+                payment: payMethod.value, timestamp: Date.now()
+            }).then(() => {
+                const summary = `ORDER ID: ${oID}\nCustomer: ${custName.value}\nOrder: ${cart.map(i => i.desc).join(", ")}\nTotal: ${totalStr}`;
+                document.getElementById("summaryText").innerText = summary;
+                orderForm.classList.add("hidden"); successScreen.classList.remove("hidden");
+            });
+        }
+
+        function copyAndChat() {
+            const txt = document.getElementById("summaryText").innerText;
+            navigator.clipboard.writeText(txt).then(() => {
+                alert("Order details copied! I-paste mo na sa chat ni Lyka.");
+                window.open("https://m.me/100024165588307", "_blank");
+            });
         }
         updateRules();
     </script>
