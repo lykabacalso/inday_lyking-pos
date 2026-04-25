@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inday Lyking POS - Admin Official</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #fce4ec; text-align: center; margin: 0; padding: 20px; color: #444; }
+        .container { background: white; max-width: 500px; margin: 10px auto; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px solid #f06292; }
+        h2 { color: #d81b60; margin: 5px 0; }
+        .section { text-align: left; background: #fff5f8; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #ffc1e3; }
+        label { font-weight: bold; display: block; margin-top: 10px; color: #880e4f; font-size: 14px; }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 16px; }
+        button { background: #e91e63; color: white; border: none; cursor: pointer; font-weight: bold; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 5px; }
+        .check-item { background: white; padding: 6px; border-radius: 6px; border: 1px solid #eee; font-size: 11px; display: flex; align-items: center; }
+        .cart-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; text-align: left; }
+        .cart-table th { border-bottom: 2px solid #f06292; padding: 5px; }
+        .cart-table td { border-bottom: 1px solid #eee; padding: 8px 5px; }
+        .total-display { font-size: 28px; font-weight: bold; color: #e91e63; margin: 10px 0; }
+        .order-card { background: #fffbe6; padding: 15px; border-left: 5px solid #ffcc00; margin-bottom: 15px; border-radius: 8px; text-align: left; }
+        .receipt-card { background: #fff; border: 1px dashed #aaa; padding: 15px; margin-bottom: 10px; text-align: left; font-family: 'Courier New', monospace; font-size: 12px; }
+        .hidden { display: none; }
+        .disabled-box { opacity: 0.3; pointer-events: none; background: #eee !important; }
+        .filter-section { background: #e3f2fd; padding: 10px; border-radius: 10px; margin-bottom: 10px; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="loginPage">
+        <h2>🍩 ADMIN LOGIN</h2>
+        <input id="loginEmail" type="text" placeholder="Username">
+        <input id="loginPass" type="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <button style="background:#f06292;" onclick="showPage('signupPage')">Create Admin</button>
+    </div>
+
+    <div class="container hidden" id="signupPage">
+        <h2>📝 SIGNUP</h2>
+        <input id="signupEmail" type="text" placeholder="Username">
+        <input id="signupPass" type="password" placeholder="Password">
+        <button onclick="signup()">Register Now</button>
+    </div>
+
+    <div id="posPage" class="hidden">
+        <div class="container">
+            <h2 style="margin:0;">WALK-IN ORDER</h2>
+            <div class="section">
+                <input type="text" id="custName" placeholder="Customer Name">
+                <label>Order Type:</label>
+                <select id="orderType"><option value="Dine-in">Dine-in</option><option value="Take-out">Take-out</option></select>
+                
+                <label>Package:</label>
+                <select id="pkgSelect" onchange="updateRules()">
+                    <option value="25-1-Regular">Solo Regular - ₱25</option>
+                    <option value="30-1-Premium">Solo Premium - ₱30</option>
+                    <option value="55-2-Regular">Couple Regular - ₱55</option>
+                    <option value="60-2-Premium">Couple Premium - ₱60</option>
+                    <option value="100-3-Regular">Barkada Regular - ₱100</option>
+                    <option value="110-3-Premium">Barkada Premium - ₱110</option>
+                </select>
+                
+                <label id="limitLabel" style="color: blue;">Limit: 1 Flavor & 1 Topping</label>
+
+                <label>Flavors:</label>
+                <div class="grid">
+                    <label class="check-item"><input type="checkbox" name="flavor" class="flavor-cb" value="Choco"> Choco</label>
+                    <label class="check-item"><input type="checkbox" name="flavor" class="flavor-cb" value="Straw"> Straw</label>
+                    <label class="check-item"><input type="checkbox" name="flavor" class="flavor-cb" value="Matcha"> Matcha</label>
+                    <label class="check-item"><input type="checkbox" name="flavor" class="flavor-cb" value="Ube"> Ube</label>
+                    <label class="check-item"><input type="checkbox" name="flavor" class="flavor-cb" value="Milky"> Milky</label>
+                </div>
+
+                <label>Toppings (Regular):</label>
+                <div class="grid" id="regBox">
+                    <label class="check-item"><input type="checkbox" name="topping" class="top-cb" value="Sprinkles"> Sprinkles</label>
+                    <label class="check-item"><input type="checkbox" name="topping" class="top-cb" value="Mallows"> Mallows</label>
+                    <label class="check-item"><input type="checkbox" name="topping" class="top-cb" value="Grahams"> Grahams</label>
+                </div>
+
+                <label>Toppings (Premium):</label>
+                <div class="grid" id="premBox">
+                    <label class="check-item"><input type="checkbox" name="topping" class="top-cb" value="ChocoChip"> ChocoChip</label>
+                    <label class="check-item"><input type="checkbox" name="topping" class="top-cb" value="Almonds"> Almonds</label>
+                    <label class="check-item"><input type="checkbox" name="topping" class="top-cb" value="Oreo"> Oreo</label>
+                </div>
+
+                <button onclick="addToCart()" style="background:#ad1457; margin-top:15px;">+ ADD TO LIST</button>
+            </div>
+
+            <div class="section" style="background: #fff;">
+                <label>CART LIST:</label>
+                <table class="cart-table">
+                    <thead><tr><th>Item</th><th>Sub</th><th></th></tr></thead>
+                    <tbody id="cartItems"></tbody>
+                </table>
+                <div class="total-display" id="totalDisplay">Total: ₱0</div>
+                
+                <label style="color:red;">Enter Cash Payment:</label>
+                <input type="number" id="cashInput" placeholder="Enter Cash ₱" oninput="calculateChange()">
+                <div id="changeDisplay" style="font-weight:bold; color:green; font-size: 20px; margin: 10px 0;">Change: ₱0.00</div>
+                <button onclick="checkout()" style="background:#2e7d32;">CHECKOUT & PAID</button>
+            </div>
+            <button onclick="location.reload()" style="background:#757575;">Logout</button>
+        </div>
+
+        <div class="container" style="background:#fff9c4; border: 2px solid #fbc02d;">
+            <h3>🔔 ONLINE ORDERS</h3>
+            <div id="orderHistory"></div>
+        </div>
+
+        <div class="container" style="background:#e3f2fd; border: 2px solid #2196f3;">
+            <h3>📋 SALES HISTORY</h3>
+            <div class="filter-section">
+                <label>Filter by Date:</label>
+                <input type="date" id="filterDate" onchange="renderReceipts()">
+            </div>
+            <div id="receiptHistory"></div>
+            <button onclick="clearSales()" style="background:#d32f2f; margin-top:10px; font-size:12px;">CLEAR HISTORY</button>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = { databaseURL: "https://inday-lyking-pos-default-rtdb.firebaseio.com/" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let cart = []; let grandTotal = 0; let limit = 1; let type = "Regular";
+        document.getElementById('filterDate').valueAsDate = new Date();
+
+        function showPage(p) { 
+            loginPage.classList.add("hidden"); signupPage.classList.add("hidden"); posPage.classList.add("hidden");
+            document.getElementById(p).classList.remove("hidden");
+        }
+
+        function signup() {
+            let users = JSON.parse(localStorage.getItem("users")) || [];
+            users.push({email: signupEmail.value, pass: signupPass.value});
+            localStorage.setItem("users", JSON.stringify(users));
+            alert("Signup Success!"); showPage('loginPage');
+        }
+
+        function login() {
+            let users = JSON.parse(localStorage.getItem("users")) || [];
+            if(users.find(u => u.email === loginEmail.value && u.pass === loginPass.value)) { 
+                showPage('posPage'); listenToOnlineOrders(); renderReceipts(); updateRules();
+            } else alert("Invalid Login!");
+        }
+
+        function updateRules() {
+            let val = pkgSelect.value.split("-");
+            limit = parseInt(val[1]); type = val[2];
+            document.getElementById("limitLabel").innerText = `Limit: ${limit} Flavor & ${limit} Topping`;
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            if(type === "Regular") { regBox.classList.remove("disabled-box"); premBox.classList.add("disabled-box"); }
+            else { premBox.classList.remove("disabled-box"); regBox.classList.add("disabled-box"); }
+        }
+
+        document.addEventListener('change', function(e) {
+            if(e.target.classList.contains('flavor-cb')) {
+                if(document.querySelectorAll('.flavor-cb:checked').length > limit) { alert(`Limit ${limit} only!`); e.target.checked = false; }
+            }
+            if(e.target.classList.contains('top-cb')) {
+                if(document.querySelectorAll('.top-cb:checked').length > limit) { alert(`Limit ${limit} only!`); e.target.checked = false; }
+            }
+        });
+
+        function addToCart() {
+            let flavors = Array.from(document.querySelectorAll('.flavor-cb:checked')).map(cb => cb.value);
+            let tops = Array.from(document.querySelectorAll('.top-cb:checked')).map(cb => cb.value);
+            if(flavors.length === 0) return alert("Select Flavor!");
+
+            cart.push({
+                item: pkgSelect.options[pkgSelect.selectedIndex].text,
+                sub: parseInt(pkgSelect.value.split("-")[0]),
+                details: `F: ${flavors.join(", ")} | T: ${tops.join(", ")}`
+            });
+            renderCart();
+        }
+
+        function renderCart() {
+            let html = ""; grandTotal = 0;
+            cart.forEach((item, i) => {
+                html += `<tr><td><b>${item.item}</b><br><small>${item.details}</small></td><td>₱${item.sub}</td><td><button onclick="cart.splice(${i},1);renderCart()" style="background:red;width:auto;padding:2px 5px;">X</button></td></tr>`;
+                grandTotal += item.sub;
+            });
+            document.getElementById("cartItems").innerHTML = html;
+            document.getElementById("totalDisplay").innerText = "Total: ₱" + grandTotal;
+            calculateChange();
+        }
+
+        function calculateChange() {
+            let cash = parseFloat(document.getElementById("cashInput").value) || 0;
+            let change = cash - grandTotal;
+            document.getElementById("changeDisplay").innerText = "Change: ₱" + (change >= 0 ? change.toFixed(2) : "0.00");
+        }
+
+        function checkout() {
+            let cash = parseFloat(document.getElementById("cashInput").value) || 0;
+            if(cart.length === 0) return alert("Cart is empty!");
+            if(cash < grandTotal || cash === 0) return alert("Kulang ang bayad!");
+
+            let now = new Date();
+            saveReceipt({
+                customer: custName.value || "Walk-in",
+                type: orderType.value,
+                items: cart.map(i => `${i.item} (${i.details})`).join("<br>"),
+                total: "₱" + grandTotal,
+                cash: "₱" + cash,
+                change: "₱" + (cash - grandTotal).toFixed(2),
+                fullDate: now.toISOString().split('T')[0],
+                time: now.toLocaleTimeString()
+            });
+
+            alert("Payment Recorded!");
+            cart = []; grandTotal = 0; document.getElementById("cashInput").value = ""; custName.value = ""; renderCart();
+        }
+
+        function saveReceipt(data) {
+            let history = JSON.parse(localStorage.getItem("sales_history")) || [];
+            history.unshift(data);
+            localStorage.setItem("sales_history", JSON.stringify(history));
+            renderReceipts();
+        }
+
+        function renderReceipts() {
+            let history = JSON.parse(localStorage.getItem("sales_history")) || [];
+            let filter = document.getElementById("filterDate").value;
+            let filtered = history.filter(h => h.fullDate === filter);
+            
+            document.getElementById("receiptHistory").innerHTML = filtered.length > 0 ? filtered.map(h => `
+                <div class="receipt-card">
+                    <b>${h.customer} (${h.type})</b><br>
+                    <small>${h.fullDate} | ${h.time}</small><br>
+                    <hr style="border:0; border-top:1px dashed #ccc;">
+                    ${h.items}<br>
+                    <b>TOTAL: ${h.total}</b><br>
+                    <small>CASH: ${h.cash} | CHANGE: ${h.change}</small>
+                </div>`).join("") : "<i>No records.</i>";
+        }
+
+        function clearSales() { if(confirm("Clear ALL?")) { localStorage.removeItem("sales_history"); renderReceipts(); } }
+
+        function listenToOnlineOrders() {
+            db.ref("orders").on("value", (snap) => {
+                let orders = snap.val();
+                orderHistory.innerHTML = orders ? "" : "No pending orders.";
+                for(let id in orders) {
+                    let o = orders[id];
+                    orderHistory.innerHTML += `<div class="order-card"><b>${o.customer}</b><br>${o.package}<br>${o.flavors} | ${o.toppings}<br><b>${o.total}</b><br><button onclick="paidOnline('${id}')" style="background:green;">DONE</button></div>`;
+                }
+            });
+        }
+
+        function paidOnline(id) {
+            db.ref("orders/"+id).once("value", s => {
+                let o = s.val();
+                let now = new Date();
+                saveReceipt({ customer: o.customer, type: "Online", items: `${o.package} (${o.flavors} | ${o.toppings})`, total: o.total, cash: "Paid", change: "0.00", fullDate: now.toISOString().split('T')[0], time: now.toLocaleTimeString() });
+                db.ref("orders/"+id).remove();
+            });
+        }
+    </script>
+</body>
+</html>
