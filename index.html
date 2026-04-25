@@ -10,7 +10,8 @@
         body { font-family: 'Segoe UI', sans-serif; background: #fce4ec; text-align: center; margin: 0; padding: 20px; padding-bottom: 100px; }
         .container { background: white; max-width: 450px; margin: auto; padding: 25px; border-radius: 25px; border: 3px solid #f06292; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         
-        .website-logo { max-width: 150px; margin: -10px auto 10px auto; display: block; border-radius: 50%; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+        /* FIX LOGO: Siniguro nating laging bilog at kita */
+        .website-logo { width: 120px; height: 120px; margin: -10px auto 10px auto; display: block; border-radius: 50%; object-fit: cover; border: 2px solid #f06292; background: white; }
         
         h2 { color: #d81b60; margin: 0 0 15px 0; font-size: 22px; text-transform: uppercase; }
         .section { text-align: left; background: #fff5f8; padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #ffc1e3; }
@@ -23,30 +24,32 @@
         #qtyDisplay { font-size: 20px; font-weight: bold; color: #d81b60; }
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .check-item { background: white; padding: 10px; border-radius: 8px; border: 1px solid #eee; font-size: 13px; display: flex; align-items: center; cursor: pointer; transition: 0.2s; }
+        .check-item { background: white; padding: 10px; border-radius: 8px; border: 1px solid #eee; font-size: 13px; display: flex; align-items: center; cursor: pointer; }
         .check-item input { width: auto; margin-right: 8px; }
         
         .total-box { font-size: 30px; font-weight: bold; color: #e91e63; margin: 15px 0; }
-        .fee-label { color: #d32f2f; font-size: 14px; text-align: right; font-weight: bold; }
+        .fee-label { color: #d32f2f; font-size: 14px; text-align: right; font-weight: bold; margin-top: 5px; }
 
         button { width: 100%; border: none; padding: 15px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-add { background: #ad1457; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .btn-add:hover { background: #d81b60; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(240, 98, 146, 0.4); }
         .btn-send { background: #2e7d32; color: white; margin-top: 10px; }
         .btn-messenger { background: #0084ff; color: white; margin-top: 10px; }
         
+        /* CART TABLE: Siniguradong malinis tingnan */
         .cart-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; text-align: left; }
-        .cart-table td { border-bottom: 1px solid #eee; padding: 10px 0; }
+        .cart-table tr { border-bottom: 1px solid #ffd1dc; }
+        .cart-table td { padding: 12px 5px; vertical-align: middle; }
 
         .fb-chat { position: fixed; bottom: 20px; right: 20px; background: #0084ff; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 8px; z-index: 1000; font-size: 14px; }
-        .hidden { display: none; }
+        .hidden { display: none !important; }
         #gcashInfo { background: #e3f2fd; border: 1px solid #2196f3; padding: 15px; border-radius: 12px; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
 
     <div class="container" id="orderForm">
-        <img src="logo.jpg" alt="Inday Lyking Logo" class="website-logo">
+        <img src="image.png" alt="Inday Lyking Logo" class="website-logo" onerror="this.src='https://via.placeholder.com/150?text=No+Logo'">
+        
         <h2>Order Online</h2>
         
         <div class="section">
@@ -72,7 +75,8 @@
                 <option value="100-3-Regular">Barkada Regular - ₱100</option>
                 <option value="110-3-Premium">Barkada Premium - ₱110</option>
             </select>
-            <label id="limitLabel">Limit: 1 Flavor & 1 Topping</label>
+            <label id="limitLabel" style="color:#d81b60; font-weight:bold;">Limit: 1 Flavor & 1 Topping</label>
+            
             <label>Flavors:</label>
             <div class="grid">
                 <label class="check-item"><input type="checkbox" class="flavor-cb" value="Choco"> Chocolate</label>
@@ -81,6 +85,7 @@
                 <label class="check-item"><input type="checkbox" class="flavor-cb" value="Ube"> Ube</label>
                 <label class="check-item"><input type="checkbox" class="flavor-cb" value="Milky"> Milky</label>
             </div>
+            
             <label>Toppings:</label>
             <div class="grid" id="regBox">
                 <label class="check-item"><input type="checkbox" class="top-cb" value="Sprinkles">Sprinkles</label>
@@ -95,13 +100,14 @@
                 <label class="check-item"><input type="checkbox" class="top-cb" value="Nips">Nips</label>
                 <label class="check-item"><input type="checkbox" class="top-cb" value="Oreo">Oreo</label>
             </div>
+
             <label>Quantity:</label>
             <div class="qty-container">
-                <button class="qty-btn" onclick="changeQty(-1)">-</button>
+                <button type="button" class="qty-btn" onclick="changeQty(-1)">-</button>
                 <span id="qtyDisplay">1</span>
-                <button class="qty-btn" onclick="changeQty(1)">+</button>
+                <button type="button" class="qty-btn" onclick="changeQty(1)">+</button>
             </div>
-            <button class="btn-add" onclick="addToList()">+ ADD TO LIST</button>
+            <button type="button" class="btn-add" onclick="addToList()">+ ADD TO LIST</button>
         </div>
 
         <div class="section">
@@ -116,8 +122,12 @@
             </div>
         </div>
 
-        <div class="section" style="background: white;">
-            <table class="cart-table"><tbody id="cartItems"></tbody></table>
+        <div class="section" style="background: white; border: 2px solid #f06292;">
+            <label style="color: #e91e63; font-size: 16px;">MY ORDERS:</label>
+            <table class="cart-table">
+                <tbody id="cartItems">
+                    </tbody>
+            </table>
             <div id="feeDisplay" class="fee-label"></div>
             <div class="total-box" id="totalDisplay">Total: ₱0</div>
             <button id="sendBtn" class="btn-send" onclick="sendOrder()">SEND ORDER NOW</button>
@@ -125,7 +135,7 @@
     </div>
 
     <div class="container hidden" id="successScreen">
-        <img src="logo.jpg" alt="Logo" class="website-logo">
+        <img src="image.png" alt="Logo" class="website-logo">
         <h2 style="color: #4CAF50;">Order Sent! ✔</h2>
         <div id="orderIdBox" style="background:#fff3e0; padding:15px; border-radius:10px; margin:10px 0; border:1px dashed #fb8c00; text-align:left;">
             <p id="summaryText" style="font-size:13px; color:#333; line-height:1.5;"></p>
@@ -149,53 +159,117 @@
         function updateRules() {
             let val = pkgSelect.value.split("-");
             limit = parseInt(val[1]); type = val[2];
-            limitLabel.innerText = `Limit: ${limit} Flavor & ${limit} Topping`;
+            document.getElementById("limitLabel").innerText = `Limit: ${limit} Flavor & ${limit} Topping`;
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-            document.getElementById("regBox").classList.toggle("hidden", type !== "Regular");
-            document.getElementById("premBox").classList.toggle("hidden", type === "Regular");
+            
+            if(type === "Regular") {
+                document.getElementById("regBox").classList.remove("hidden");
+                document.getElementById("premBox").classList.add("hidden");
+            } else {
+                document.getElementById("regBox").classList.add("hidden");
+                document.getElementById("premBox").classList.remove("hidden");
+            }
         }
 
         document.addEventListener('change', function(e) {
-            if(e.target.classList.contains('flavor-cb') && document.querySelectorAll('.flavor-cb:checked').length > limit) { alert("Limit reached!"); e.target.checked = false; }
-            if(e.target.classList.contains('top-cb') && document.querySelectorAll('.top-cb:checked').length > limit) { alert("Limit reached!"); e.target.checked = false; }
+            if(e.target.classList.contains('flavor-cb')) {
+                if(document.querySelectorAll('.flavor-cb:checked').length > limit) {
+                    alert("Limit reached for Flavors!");
+                    e.target.checked = false;
+                }
+            }
+            if(e.target.classList.contains('top-cb')) {
+                if(document.querySelectorAll('.top-cb:checked').length > limit) {
+                    alert("Limit reached for Toppings!");
+                    e.target.checked = false;
+                }
+            }
         });
 
         function addToList() {
             let f = Array.from(document.querySelectorAll('.flavor-cb:checked')).map(cb => cb.value);
             let t = Array.from(document.querySelectorAll('.top-cb:checked')).map(cb => cb.value);
+            
             if(f.length === 0) return alert("Pili ka muna ng flavor!");
-            cart.push({ pkg: pkgSelect.options[pkgSelect.selectedIndex].text, price: parseInt(pkgSelect.value) * currentQty, desc: `(${currentQty}x) F: ${f.join(", ")} | T: ${t.join(", ")}` });
-            currentQty = 1; document.getElementById("qtyDisplay").innerText = "1";
-            renderCart();
+            
+            let packagePrice = parseInt(pkgSelect.value.split("-")[0]);
+            let subtotal = packagePrice * currentQty;
+
+            cart.push({ 
+                pkg: pkgSelect.options[pkgSelect.selectedIndex].text, 
+                price: subtotal, 
+                desc: `${currentQty}x ${pkgSelect.options[pkgSelect.selectedIndex].text}`,
+                details: `F: ${f.join(", ")} | T: ${t.join(", ")}` 
+            });
+
+            // Reset current selections
+            currentQty = 1; 
+            document.getElementById("qtyDisplay").innerText = "1";
             document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            
+            renderCart();
         }
 
         function renderCart() {
-            let h = ""; let subtotal = 0;
+            let listBody = document.getElementById("cartItems");
+            listBody.innerHTML = ""; // Clear current list
+            let subtotal = 0;
+
+            if(cart.length === 0) {
+                listBody.innerHTML = "<tr><td colspan='3' style='text-align:center; color:#999;'>No items added yet.</td></tr>";
+            }
+
             cart.forEach((item, i) => {
-                h += `<tr><td><b>${item.desc}</b></td><td>₱${item.price}</td><td><button onclick="cart.splice(${i},1);renderCart()" style="background:red;color:white;padding:2px 8px;border-radius:5px;width:auto;">X</button></td></tr>`;
+                let row = `<tr>
+                    <td><b>${item.desc}</b><br><small>${item.details}</small></td>
+                    <td style="font-weight:bold; color:#e91e63;">₱${item.price}</td>
+                    <td style="text-align:right;">
+                        <button onclick="removeFromCart(${i})" style="background:#ffcdd2; color:#c62828; border:none; padding:5px 10px; border-radius:5px; width:auto; font-size:12px;">Remove</button>
+                    </td>
+                </tr>`;
+                listBody.innerHTML += row;
                 subtotal += item.price;
             });
+
             let dFee = (orderOption.value === "Delivery" && cart.length > 0) ? 30 : 0;
             document.getElementById("feeDisplay").innerText = dFee > 0 ? "+ Delivery Fee: ₱30" : "";
             document.getElementById("totalDisplay").innerText = "Total: ₱" + (subtotal + dFee);
         }
 
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            renderCart();
+        }
+
         function sendOrder() {
             if(!custName.value || !custPhone.value || cart.length === 0) return alert("Complete details please!");
+            if(orderOption.value === "Delivery" && !custAddress.value) return alert("Paki-lagay ang delivery address.");
+            
             const oID = "IL-" + Math.floor(1000 + Math.random() * 9000);
-            sendBtn.disabled = true; sendBtn.innerText = "Sending...";
+            let sendBtn = document.getElementById("sendBtn");
+            sendBtn.disabled = true; 
+            sendBtn.innerText = "Sending...";
+            
             const totalStr = document.getElementById("totalDisplay").innerText;
 
             db.ref("orders").push({
-                orderID: oID, customer: custName.value, phone: custPhone.value,
+                orderID: oID, 
+                customer: custName.value, 
+                phone: custPhone.value,
                 address: orderOption.value === "Pickup" ? "STORE PICKUP" : custAddress.value,
-                items: cart.map(i => i.desc).join(", "), total: totalStr,
-                payment: payMethod.value, timestamp: Date.now()
+                items: cart.map(i => `${i.desc} (${i.details})`).join(" | "), 
+                total: totalStr,
+                payment: payMethod.value, 
+                timestamp: Date.now()
             }).then(() => {
-                const summary = `ORDER ID: ${oID}\nCustomer: ${custName.value}\nOrder: ${cart.map(i => i.desc).join(", ")}\nTotal: ${totalStr}`;
+                const summary = `ORDER ID: ${oID}\nCustomer: ${custName.value}\nOrders: ${cart.map(i => i.desc).join(", ")}\nTotal: ${totalStr}\nPayment: ${payMethod.value}`;
                 document.getElementById("summaryText").innerText = summary;
-                orderForm.classList.add("hidden"); successScreen.classList.remove("hidden");
+                document.getElementById("orderForm").classList.add("hidden"); 
+                document.getElementById("successScreen").classList.remove("hidden");
+            }).catch(err => {
+                alert("Error sending order. Check connection.");
+                sendBtn.disabled = false;
+                sendBtn.innerText = "SEND ORDER NOW";
             });
         }
 
@@ -206,6 +280,8 @@
                 window.open("https://m.me/100024165588307", "_blank");
             });
         }
+
+        // Initialize Rules
         updateRules();
     </script>
 </body>
