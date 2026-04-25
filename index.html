@@ -47,7 +47,7 @@
 
     <div id="posPage" class="hidden">
         <div class="container">
-            <p style="font-size: 12px; color: #888;">Note: Click anywhere to enable sound alert.</p>
+            <p style="font-size: 12px; color: #e91e63; font-weight: bold;">⚠️ PAALALA: I-click ang screen kahit saan para gumana ang alarm!</p>
             <h2 style="margin:0;">WALK-IN ORDER</h2>
             <div class="section">
                 <input type="text" id="custName" placeholder="Customer Name">
@@ -131,6 +131,7 @@
 
         let cart = []; let grandTotal = 0; let limit = 1; let type = "Regular";
         let lastOrderCount = 0;
+        let alarmInterval = null;
 
         document.getElementById('filterDate').valueAsDate = new Date();
 
@@ -247,16 +248,36 @@
 
         function clearSales() { if(confirm("Clear ALL Sales History?")) { localStorage.removeItem("sales_history"); renderReceipts(); } }
 
-        // --- FIXED ONLINE ORDER SYSTEM WITH BEEP ---
+        // --- ALARM FUNCTIONS (LOOPING BEEP) ---
+        function playAlarm() {
+            if (alarmInterval) return; // Wag ulitin kung may interval na
+            alarmInterval = setInterval(() => {
+                let audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+                audio.play().catch(e => console.log("Sound blocked. Click page."));
+            }, 3000); // Tutunog bawat 3 seconds
+        }
+
+        function stopAlarm() {
+            clearInterval(alarmInterval);
+            alarmInterval = null;
+        }
+
+        // --- ONLINE ORDER SYSTEM ---
         function listenToOnlineOrders() {
             db.ref("orders").on("value", (snap) => {
                 let orders = snap.val();
                 let currentCount = orders ? Object.keys(orders).length : 0;
 
-                // MAG-BEEP KUNG DUMAMI ANG ORDER
+                // Mag-start ng alarm kung may bagong order
                 if (currentCount > lastOrderCount) {
-                    playBeep();
+                    playAlarm();
                 }
+                
+                // Patayin ang alarm kung wala nang orders
+                if (currentCount === 0) {
+                    stopAlarm();
+                }
+                
                 lastOrderCount = currentCount;
 
                 if (!orders) {
@@ -274,22 +295,19 @@
                             Items: ${o.package || '---'}<br>
                             Details: <small>${o.flavors || ''}</small><br>
                             <b>Total: ${o.total || '₱0'}</b><br>
-                            <button onclick="paidOnline('${id}')" style="background:green; margin-top:10px;">MARK AS PAID</button>
+                            <button onclick="paidOnline('${id}')" style="background:green; margin-top:10px;">MARK AS PAID (Stop Sound)</button>
                         </div>`;
                 }
                 document.getElementById("orderHistory").innerHTML = html;
             });
         }
 
-        function playBeep() {
-            let audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-            audio.play().catch(e => console.log("Sound blocked. Click page first."));
-        }
-
         function paidOnline(id) {
             db.ref("orders/"+id).once("value", s => {
                 let o = s.val();
                 if(!o) return;
+                
+                // Pag-record sa Sales History
                 let now = new Date();
                 saveReceipt({ 
                     customer: o.customer, 
@@ -301,8 +319,10 @@
                     fullDate: now.toISOString().split('T')[0], 
                     time: now.toLocaleTimeString() 
                 });
+
+                // Burahin sa database (titigil ang alarm kapag last order na ito)
                 db.ref("orders/"+id).remove();
-                alert("Online order moved to Sales History!");
+                alert("Order Processed!");
             });
         }
     </script>
